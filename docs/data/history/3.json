@@ -1,0 +1,60 @@
+{
+  "9999-1": {
+    "rol": "9999-1",
+    "addresses": [
+      "CALLE DEMOSTRACIÓN N° 10, POBLACIÓN FICTICIA"
+    ],
+    "events": [
+      {
+        "id": "demo-1-0",
+        "roles": [
+          "9999-1"
+        ],
+        "kind": "EDIFICACION",
+        "number": "DEMO-1-0",
+        "date": "2026-01-10",
+        "year": 2026,
+        "address": "CALLE DEMOSTRACIÓN N° 10, POBLACIÓN FICTICIA",
+        "typology": "Vivienda de demostración",
+        "surface": "80",
+        "scope": "Total",
+        "referenceRaw": "Antecedente ficticio",
+        "parentReference": "",
+        "status": "DEMO",
+        "flags": [],
+        "sources": [
+          {
+            "sheet": "DEMO",
+            "row": 1,
+            "cell": "A1"
+          }
+        ]
+      },
+      {
+        "id": "demo-1-1",
+        "roles": [
+          "9999-1"
+        ],
+        "kind": "RECEPCION",
+        "number": "DEMO-1-1",
+        "date": "2026-01-11",
+        "year": 2026,
+        "address": "CALLE DEMOSTRACIÓN N° 10, POBLACIÓN FICTICIA",
+        "typology": "Vivienda de demostración",
+        "surface": "80",
+        "scope": "Total",
+        "referenceRaw": "Antecedente ficticio",
+        "parentReference": "",
+        "status": "DEMO",
+        "flags": [],
+        "sources": [
+          {
+            "sheet": "DEMO",
+            "row": 1,
+            "cell": "A1"
+          }
+        ]
+      }
+    ]
+  }
+}

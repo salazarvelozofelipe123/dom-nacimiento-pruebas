@@ -1,0 +1,1 @@
+export const MUNICIPAL_MINVU_SOURCES={};

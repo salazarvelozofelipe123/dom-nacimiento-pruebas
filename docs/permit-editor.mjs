@@ -1,0 +1,9 @@
+const h=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let serial=0;
+export function actEditor(a={type:'Permiso de edificación'}){
+ const id='permit-act-'+(++serial),types=['Permiso de edificación','Obra menor','Ampliación','Modificación','Alteración','Recepción','Regularización','Declaración jurada'];
+ return `<fieldset class="act-card" data-act><legend>${h(a.type||'Antecedente del certificado')}</legend><div class="act-head"><span>Número, fecha y superficie se incorporan al recuadro.</span><button type="button" class="btn btn-sm" data-action="removeAct">Quitar</button></div><div class="form-grid"><div class="field"><label for="${id}-type">Tipo de permiso o recepción</label><select id="${id}-type" data-key="type">${[...new Set([...types,...(a.type?[a.type]:[])])].map(t=>`<option ${a.type===t?'selected':''}>${h(t)}</option>`).join('')}</select></div>${['number','date','surface','scope','source'].map((k,j)=>`<div class="field ${k==='source'?'full':''}"><label for="${id}-${k}">${['Número del permiso o recepción','Fecha del permiso o recepción','Superficie declarada (m²)','Alcance parcial o total','Documento o fuente de respaldo'][j]}</label><input id="${id}-${k}" data-key="${k}" type="${k==='date'?'date':'text'}" value="${h(a[k]||'')}" maxlength="${k==='source'?1000:k==='surface'?40:100}"${k==='surface'?' inputmode="decimal"':''}></div>`).join('')}</div></fieldset>`;
+}
+export function actEditors(acts=[]){return (acts.length?acts:[{type:'Permiso de edificación'},{type:'Recepción'}]).map(actEditor).join('');}
+export function enteredAct(a){return ['number','date','surface','scope','source'].some(k=>String(a[k]||'').trim());}
+export function readActCards(root){return [...root.querySelectorAll('[data-act]')].map(card=>Object.fromEntries([...card.querySelectorAll('[data-key]')].map(el=>[el.dataset.key,el.value]))).filter(enteredAct);}

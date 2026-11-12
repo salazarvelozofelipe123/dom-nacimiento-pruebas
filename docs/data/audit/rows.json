@@ -1,0 +1,50 @@
+[
+  {
+    "rol": "9999-1",
+    "documentaryAddresses": [
+      "CALLE DEMOSTRACIÓN N° 10, POBLACIÓN FICTICIA"
+    ],
+    "cadastralAddresses": [],
+    "requiresAddressReview": false,
+    "codes": [
+      "NO_CARTOGRAPHIC_CONTOUR"
+    ],
+    "historyCount": 2,
+    "contours": 0,
+    "sourceReferences": [
+      "DEMO!A1"
+    ]
+  },
+  {
+    "rol": "9999-2",
+    "documentaryAddresses": [
+      "CALLE DEMOSTRACIÓN N° 20, POBLACIÓN FICTICIA"
+    ],
+    "cadastralAddresses": [],
+    "requiresAddressReview": false,
+    "codes": [
+      "NO_CARTOGRAPHIC_CONTOUR"
+    ],
+    "historyCount": 2,
+    "contours": 0,
+    "sourceReferences": [
+      "DEMO!A2"
+    ]
+  },
+  {
+    "rol": "9999-3",
+    "documentaryAddresses": [
+      "CALLE DEMOSTRACIÓN N° 30, POBLACIÓN FICTICIA"
+    ],
+    "cadastralAddresses": [],
+    "requiresAddressReview": false,
+    "codes": [
+      "NO_CARTOGRAPHIC_CONTOUR"
+    ],
+    "historyCount": 2,
+    "contours": 0,
+    "sourceReferences": [
+      "DEMO!A3"
+    ]
+  }
+]

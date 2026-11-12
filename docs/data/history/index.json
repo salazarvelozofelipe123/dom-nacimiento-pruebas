@@ -1,0 +1,66 @@
+{
+  "metadata": {
+    "schemaVersion": 1,
+    "name": "Conjunto sintético de pruebas",
+    "asOf": "2026-11-12",
+    "eventCount": 6,
+    "propertyCount": 3,
+    "linkedEventCount": 6,
+    "unlinkedEventCount": 0,
+    "reviewEventCount": 0,
+    "propertiesWithPrimaryGeometry": 0,
+    "eventsByKind": {
+      "EDIFICACION": 3,
+      "RECEPCION": 3
+    },
+    "firstDate": "2026-01-10",
+    "lastDate": "2026-01-11",
+    "sha256": "DEMO",
+    "columnMappings": {},
+    "sheets": {}
+  },
+  "properties": {
+    "9999-1": {
+      "rol": "9999-1",
+      "address": "CALLE DEMOSTRACIÓN N° 10, POBLACIÓN FICTICIA",
+      "bucket": "3",
+      "eventCount": 2,
+      "types": {
+        "EDIFICACION": 1,
+        "RECEPCION": 1
+      },
+      "firstDate": "2026-01-10",
+      "lastDate": "2026-01-11",
+      "reviewCount": 0,
+      "geometryCount": 0
+    },
+    "9999-2": {
+      "rol": "9999-2",
+      "address": "CALLE DEMOSTRACIÓN N° 20, POBLACIÓN FICTICIA",
+      "bucket": "0",
+      "eventCount": 2,
+      "types": {
+        "EDIFICACION": 1,
+        "RECEPCION": 1
+      },
+      "firstDate": "2026-01-10",
+      "lastDate": "2026-01-11",
+      "reviewCount": 0,
+      "geometryCount": 0
+    },
+    "9999-3": {
+      "rol": "9999-3",
+      "address": "CALLE DEMOSTRACIÓN N° 30, POBLACIÓN FICTICIA",
+      "bucket": "c",
+      "eventCount": 2,
+      "types": {
+        "EDIFICACION": 1,
+        "RECEPCION": 1
+      },
+      "firstDate": "2026-01-10",
+      "lastDate": "2026-01-11",
+      "reviewCount": 0,
+      "geometryCount": 0
+    }
+  }
+}

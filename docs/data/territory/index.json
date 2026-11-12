@@ -1,0 +1,19 @@
+{
+  "metadata": {
+    "asOf": "2026-11-12",
+    "features": 0,
+    "zoneSource": {
+      "name": "Sin cartografía municipal en esta demo",
+      "url": ""
+    },
+    "roadSource": {
+      "name": "Sin inventario municipal en esta demo",
+      "url": ""
+    },
+    "zonePolygons": 0,
+    "zoneCount": 0
+  },
+  "features": {},
+  "roles": {},
+  "cipByRol": {}
+}

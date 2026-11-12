@@ -1,0 +1,36 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {createRecord,reduceRecord,rectifyRecord,documentIssues,elapsed,normalizeRol} from '../docs/domain.mjs';
+const actor=role=>({id:role,name:role,roles:[role],enabled:true});const pro=actor('profesional'),director=actor('director'),admin=actor('administrativo');const now='2026-10-26T12:00:00.000Z';
+const payload=(type='CNU',channel='PRESENCIAL')=>({type,channel,applicant:'Persona de prueba',receivedDate:'2026-10-26',rol:'95-34',folio:channel==='DOMEL'?'FOLIO-PRUEBA':'',fields:{street:'Vía de prueba',houseNumber:'12-A',sourceNotes:'Plano verificado de prueba',numberingSource:'Plano de numeración de prueba',zones:'Zona de prueba',normSource:'Fuente comprobada de prueba',surfaceBasis:'Recepción parcial sin duplicación'},acts:type==='CPYR'?[{type:'Recepción',number:'4',date:'2026-01-01',surface:'50',scope:'Parcial',source:'Expediente de prueba'}]:[]});
+const make=(t,c)=>Object.assign(createRecord(payload(t,c),pro,now,'request-test-0001'),{assignedUid:pro.id,assignedTo:pro.name});
+const apply=(r,c,p={},a=pro,ctx={})=>reduceRecord(r,c,{expectedRevision:r.revision,...p},a,{now,...ctx}).record;
+function approved(type='CNU'){let r=make(type);r=apply(r,'submit',{confirmed:true});return apply(r,'approve',{},director);}
+function paid(r){return apply(r,'payment',{amount:2090,date:'2026-10-26',giro:'GIRO-TEST',receipt:'COMP-TEST'},admin,{preview:true});}
+test('Registro de tres familias con esquema propio',()=>{for(const t of ['CNU','CPYR','CIP']){const r=make(t);assert.equal(r.type,t);assert.equal(r.stage,'DRAFT');assert.equal(documentIssues(r).length,0)}});
+test('Folio obligatorio en DOMEL',()=>assert.throws(()=>createRecord({...payload('CNU','DOMEL'),folio:''},pro,now,'id'),/folio/));
+test('Solicitante obligatorio',()=>assert.throws(()=>createRecord({...payload(),applicant:''},pro,now,'id'),/solicitante/));
+test('Normalización ROL conserva identificador',()=>assert.equal(normalizeRol(' 95 – 34 '),'95-34'));
+test('RUT no se usa como clave predial',()=>assert.notEqual(make().id,make().rol));
+test('No se permite ROL sin guion',()=>assert.throws(()=>createRecord({...payload(),rol:'9534'},pro,now,'id'),/ROL/));
+test('Administrativo no aprueba documentos',()=>assert.throws(()=>apply(apply(make(),'submit',{confirmed:true}),'approve',{},admin),/función/));
+test('Administrador técnico no adquiere facultad profesional',()=>assert.throws(()=>apply(make(),'edit',{reason:'x',fields:{}},actor('admin')),/función/));
+test('Cuenta deshabilitada rechazada',()=>assert.throws(()=>apply(make(),'edit',{reason:'x',fields:{}},{...pro,enabled:false}),/deshabilitada/));
+test('Edición requiere motivo y conserva el original',()=>{const r=make();assert.throws(()=>apply(r,'edit',{fields:{houseNumber:'20'}}),/motivo/);const v=reduceRecord(r,'edit',{expectedRevision:r.revision,reason:'Corrección de plano',fields:{houseNumber:'20'}},pro,{now});assert.equal(v.snapshot.fields.houseNumber,'12-A');assert.equal(v.record.fields.houseNumber,'20');assert.equal(r.fields.houseNumber,'12-A')});
+test('Cambio tras aprobación invalida revisión previa',()=>{const r=apply(approved(),'edit',{reason:'Corrección',fields:{houseNumber:'30'}});assert.equal(r.stage,'DRAFT');assert.equal(r.documentVersion,2)});
+test('Actualización con versión antigua se rechaza',()=>assert.throws(()=>reduceRecord(make(),'edit',{expectedRevision:0,reason:'X'},pro,{now}),/otro equipo/));
+test('Campos técnicos desconocidos no alteran estado o número',()=>{const r=apply(make(),'edit',{reason:'X',fields:{number:999,stage:'SIGNED',street:'Corregida'}});assert.equal(r.number,null);assert.equal(r.stage,'DRAFT');assert.equal(r.fields.number,undefined)});
+test('No numerar sin pago',()=>assert.throws(()=>apply(approved(),'reserve',{year:2026,date:'2026-10-26'},pro,{counter:{last:10,reconciled:true}}),/pago/));
+test('Pago validado por uno solo',()=>{const r=paid(make());assert.equal(r.payment.verifiedBy,'administrativo');assert.throws(()=>paid(r),/ya está/)});
+test('Producción exige respaldo adjunto para el pago',()=>assert.throws(()=>apply(make(),'payment',{amount:20,date:'2026-10-26',giro:'g',receipt:'x'},admin),/Adjunta/));
+test('No numerar serie sin conciliación',()=>assert.throws(()=>apply(paid(approved()),'reserve',{year:2026,date:'2026-10-26'},pro,{counter:{last:10,reconciled:false}}),/conciliado/));
+test('Serie compartida ignora el canal',()=>{for(const channel of ['PRESENCIAL','DOMEL']){let r=approved();r.channel=channel;const out=reduceRecord(paid(r),'reserve',{expectedRevision:paid(r).revision,year:2026,date:'2026-10-26'},pro,{now,counter:{last:120,reconciled:true}});assert.equal(out.record.number,121);assert.equal(out.nextCounter.last,121)}});
+test('Número existente no se vuelve a consumir',()=>{const r=apply(paid(approved()),'reserve',{year:2026,date:'2026-10-26'},pro,{counter:{last:10,reconciled:true}});assert.throws(()=>apply(r,'reserve',{year:2026,date:'2026-10-26'},pro,{counter:{last:11,reconciled:true}}),/ya tiene/)});
+test('Identificador del piloto es inequívoco',()=>{const r=apply(paid(approved()),'reserve',{year:2026,date:'2026-10-26'},pro,{preview:true,counter:{last:0}});assert.equal(r.number,'PRUEBA-CNU-0001');assert.equal(r.isPreview,true)});
+test('Firma requiere archivo y revisión',()=>{let r=apply(paid(approved()),'reserve',{year:2026,date:'2026-10-26'},pro,{preview:true});r=apply(r,'sendSign',{reference:'DOC-TEST'});assert.throws(()=>apply(r,'signed',{confirmed:true,attachmentId:'no'}),/Adjunta/)});
+test('No se entrega borrador sin firmar',()=>assert.throws(()=>apply(make(),'deliver',{method:'CORREO',recipient:'a',reference:'b'},admin),/firmado/));
+test('Archivo firmado no se modifica mediante edición',()=>{const r={...make(),stage:'SIGNED'};assert.throws(()=>apply(r,'edit',{reason:'Corrección'}),/Rectificar/);const n=rectifyRecord(r,pro,now,'new-request','Corrección respaldada');assert.equal(n.parentId,r.id);assert.equal(n.number,null);assert.equal(n.stage,'DRAFT');assert.equal(r.stage,'SIGNED')});
+test('Espera abierta se descuenta una sola vez',()=>{let r=make();r=apply(r,'wait',{party:'USUARIO',reason:'Antecedente'});assert.throws(()=>apply(r,'wait',{party:'TERCERO',reason:'Otro'}),/abierta/);const e=elapsed(r,'2026-10-28T12:00:00.000Z');assert.equal(e.waitingDays,2);assert.equal(e.domDays,0)});
+test('CPYR no acepta actos incompletos',()=>{const r=make('CPYR');r.acts[0].source='';assert.ok(documentIssues(r).length)});
+test('Anulación conserva número e historial',()=>{const r={...make(),number:150};const out=apply(r,'cancel',{reason:'Error respaldado'},director);assert.equal(out.number,150);assert.equal(out.stage,'CANCELLED');assert.match(out.history.at(-1).action,/Error respaldado/)});
+test('Cambiar ROL invalida pago y aprobación previos',()=>{const r=apply(paid(approved()),'edit',{reason:'ROL corregido',rol:'95-35'});assert.equal(r.payment.verified,false);assert.equal(r.stage,'DRAFT')});
+test('Sustituir antecedente conserva el anterior e invalida revisión',()=>{const r=approved();r.attachments=[{id:'old-file',kind:'evidence',name:'anterior.pdf',path:'old'}];const n=apply(r,'attach',{file:{id:'new-file',kind:'evidence',name:'nuevo.pdf',path:'new',replacesId:'old-file'}});assert.equal(n.attachments[0].supersededBy,'new-file');assert.equal(n.attachments.length,2);assert.equal(n.stage,'DRAFT')});

@@ -1,0 +1,6 @@
+import {readdir,readFile} from 'node:fs/promises';import assert from 'node:assert/strict';
+async function walk(p){let out=[];for(const x of await readdir(p,{withFileTypes:true})){const f=p+'/'+x.name;out.push(...x.isDirectory()?await walk(f):[f]);}return out;}
+const files=await walk('docs');
+for(const f of files){assert(!/original\.pdf$|-template\.docx$|sources\.json$|\.csv$/.test(f),f);if(!/\.(mjs|json|html|css|webmanifest|geojson)$/.test(f))continue;const text=await readFile(f,'utf8');assert(!/libfile_[a-f0-9]+|appgprj_|OAI-Sites-Authorization|siwc_bypass|salazarvelozofelipe@gmail/.test(text),'Private reference: '+f);assert(!/https:\/\/(?:drive|docs)\.google\.com\/(?:file|document|spreadsheets|drive)\//.test(text),'Drive source: '+f);if(f.endsWith('.mjs')){for(const m of text.matchAll(/(?:from\s*|import\s*)['"](\.[^'"]+)['"]/g)){const target=new URL(m[1],new URL(f,'file://'+process.cwd()+'/'));await readFile(target);}}}
+const idx=JSON.parse(await readFile('docs/data/history/index.json'));assert.deepEqual(Object.keys(idx.properties),['9999-1','9999-2','9999-3']);assert.equal(idx.metadata.eventCount,6);
+console.log('Demo audit passed:',files.length,'files; synthetic data only; relative imports resolved');
