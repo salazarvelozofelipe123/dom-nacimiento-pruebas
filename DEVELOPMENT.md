@@ -61,3 +61,19 @@ Las superficies se registran como antecedentes sin calcular derechos ni sumar co
 que podrían superponerse. Persisten los límites de demo pública y guardado local.
 
 Verificación: 126 pruebas automatizadas y auditoría de archivos/imports satisfactorias.
+
+## Continuación 0.2.3 · inicio por áreas
+
+Inicio muestra seis accesos: Certificados, Expedientes, Reclamos y fiscalización,
+Contratos de obras, BNUP y Correspondencia. Las acciones de ingreso y desarrollo
+permanecen dentro de cada ambiente. El menú agrupa herramientas y administración en
+un desplegable; las rutas anteriores y los datos locales se conservan.
+
+Certificados incluye navegación propia de Resumen, Bandeja y proceso y Formularios.
+Su resumen permite filtrar la bandeja por etapa. Los otros ambientes muestran activos,
+asignaciones, alertas y finalizados, más etapas con conteos y filtro directo.
+La ficha conserva las actividades, permisos y requisitos del proceso existente.
+La carga de ejemplos ficticios se trasladó a Herramientas → Mejoras y alcance.
+
+Validación: 126 pruebas y auditoría de imports/contenido aprobadas. La vista local
+no fue accesible desde el navegador remoto; se verifica el despliegue por GitHub.
