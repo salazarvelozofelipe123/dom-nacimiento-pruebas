@@ -1,4 +1,4 @@
-import {createManagement} from './management-ui.mjs';
+import {createManagement} from './management-ui.mjs?v=0.2.3';
 import {CASE_ROLES} from './management-domain.mjs';
 import {actEditor,actEditors,readActCards} from './permit-editor.mjs';
 import {dataUrl,syncStatus,freshness,nextRun,externalForRol} from './dataset.mjs';
