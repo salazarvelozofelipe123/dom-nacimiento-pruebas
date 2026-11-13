@@ -3,3 +3,5 @@ aside{overflow:hidden}aside nav{min-height:100px;overflow-y:auto;flex:1;scrollba
 @media(min-width:801px){aside nav a{padding:8px 12px;min-height:35px;font-size:12px}aside .municipal-brand{padding-bottom:12px}aside .connection{padding:7px 10px;margin-top:5px}aside .profile{padding-top:8px}aside .nav-label{margin-top:10px}aside{padding-top:18px}}
 @media(max-width:1050px){.mg-module-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){.mg-module-grid,.mg-facts{grid-template-columns:1fr}.mg-module-card p{min-height:0}.mg-state{padding:15px}.mg-filter{grid-template-columns:1fr}.mg-panel .panel-body{padding:16px}.mg-money{font-size:20px!important}.mg-panel .panel-head{flex-wrap:wrap;gap:10px}}
+
+.layout aside{height:calc(100dvh - var(--demo-banner-height,42px));top:var(--demo-banner-height,42px)}
