@@ -2,6 +2,10 @@
 
 Versión de demostración derivada del sistema DOM Nacimiento. **Repositorio y demostración públicos: usar exclusivamente datos ficticios.**
 
+## Gestión integral 0.2.0
+
+La pantalla inicial ahora es la bandeja transversal. Incluye expedientes (con DJ y observaciones), reclamos y fiscalización, contratos de obras, BNUP, correspondencia e índice documental. Asignaciones, etapas, versiones y exportaciones funcionan localmente con información ficticia. Consulta [DEVELOPMENT.md](DEVELOPMENT.md) para el recorrido de prueba y las funciones pendientes.
+
 ## Qué permite probar
 - Identidad municipal y diseño adaptable a teléfono.
 - Formularios, certificados y pagos simulados.
@@ -30,4 +34,4 @@ En Settings → Pages → Build and deployment, seleccionar **Deploy from a bran
 ## Próxima etapa Firebase
 La aplicación privada original conserva el código de producción. Esta rama pública bloquea expresamente conexiones a Firebase. Para pruebas multiusuario debe habilitarse un proyecto Firebase de desarrollo independiente, con reglas, funciones, autenticación Google y pruebas en emuladores antes de usar información municipal. GitHub Pages no ejecuta /api/sync ni funciones de servidor.
 
-Las mejoras propuestas a partir de la ficha SmartDOM siguen pendientes de implementación y priorización; este traslado no las presenta como desarrolladas.
+La primera integración funcional de las mejoras de la ficha SmartDOM está implementada en modo de prueba local. Las integraciones reales, privacidad, cartografía, motor normativo, Gantt, IA y demás pendientes se detallan en DEVELOPMENT.md y en la pantalla «Mejoras y alcance».
