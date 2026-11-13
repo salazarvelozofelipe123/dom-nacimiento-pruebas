@@ -41,3 +41,23 @@ Primera integración funcional del análisis de la ficha técnica, con casos sin
 `npm test` ejecuta reglas de dominio y repositorio. `npm run check` comprueba el contenido de la demo y resolución de imports. La lógica local no sustituye reglas y transacciones en servidor; las pruebas no acreditan un despliegue Firebase ni integración real.
 
 Las fechas objetivo son días corridos operativos, no plazos legales. No se genera numeración oficial en los módulos nuevos. Los datos locales pueden perderse al limpiar el navegador. Web Locks es obligatorio para guardar; si no está disponible, se permite lectura y se explica la limitación.
+
+## Continuación 0.2.2 · borradores de expedientes
+
+En la ficha de cada expediente se dispone de seis actuaciones: edificación, obra menor,
+modificación, recepción definitiva, alteración y declaración jurada. Cada una enlaza a
+la familia oficial MINVU (fuentes consultadas el 13-11-2026). Las DJ permiten consultar
+obras menores y edificación. No se selecciona automáticamente una variante normativa.
+
+El profesional asignado o dirección puede preparar una ficha estructurada, guardar
+versiones con motivo, visualizarla y descargar HTML imprimible desde el navegador.
+Los borradores se incluyen en las exportaciones JSON y versiones del caso. No cambian
+la etapa, resultado, pago ni numeración del expediente. En propuesta de resolución,
+cierre y anulación quedan en lectura. Para corregir una propuesta se devuelve a revisión.
+
+Estas fichas NO son reproducciones de los PDF MINVU: quedan pendientes la integración
+exacta de cada plantilla y sus campos, la validación normativa y la emisión oficial.
+Las superficies se registran como antecedentes sin calcular derechos ni sumar conceptos
+que podrían superponerse. Persisten los límites de demo pública y guardado local.
+
+Verificación: 126 pruebas automatizadas y auditoría de archivos/imports satisfactorias.

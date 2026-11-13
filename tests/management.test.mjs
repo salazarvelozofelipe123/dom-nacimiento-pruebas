@@ -130,3 +130,19 @@ test('BNUP no se autoriza con un pago inferior al cálculo vigente',()=>{
 test('Falla de almacenamiento no devuelve éxito ni cambia los datos persistidos',async()=>{
  let content=null;const storage={getItem:()=>content,setItem:()=>{throw Error('QuotaExceededError');}};const repo=createCaseRepository({storage,locks:{request:(_,fn)=>Promise.resolve().then(fn)},actor:()=>actors.director,directory:()=>directory,id:()=>String(++seq),now:()=>now});await assert.rejects(repo.create('expedientes',{title:'Prueba',type:'Obra menor',receivedDate:'2026-11-13',location:'Sector',description:'Prueba'}),/Quota/);assert.equal(content,null);
 });
+
+test('Borradores de expedientes conservan versiones, limitan editores y no aprueban actuaciones',()=>{
+ const original=assign(fresh('expedientes'),'profesional');
+ const saved=cmd(original,'saveForm',{formId:'edificacion',values:{owner:'Propietario ficticio',projectArea:'123.5',unknown:'ignorar'}},'profesional');
+ assert.equal(saved.stage,original.stage);assert.equal(saved.formDrafts[0].version,1);assert.equal(saved.formDrafts[0].values.projectArea,'123.5');assert.equal(saved.formDrafts[0].values.unknown,undefined);
+ assert.equal(original.formDrafts,undefined);
+ const changed=cmd(saved,'saveForm',{formId:'edificacion',values:{projectArea:'124'}},'profesional');
+ assert.equal(changed.formDrafts.length,1);assert.equal(changed.formDrafts[0].version,2);assert.equal(changed.versions.at(-1).formDrafts[0].values.projectArea,'123.5');
+ for(const role of ['administrativo','consulta','ito'])assert.throws(()=>cmd(saved,'saveForm',{formId:'edificacion',values:{}},role),/función/);
+ const outsider={...actors.profesional,id:'otra-persona'};
+ assert.throws(()=>reduceCase(saved,'saveForm',{expectedRevision:saved.revision,reason:'Prueba',formId:'edificacion',values:{}},outsider,{now}),/responsable/);
+ assert.throws(()=>cmd(saved,'saveForm',{formId:'inventado',values:{}}),/no válido/);
+ assert.throws(()=>cmd(saved,'saveForm',{formId:'recepcion',values:{projectArea:'-1'}}),/superficie/);
+ assert.throws(()=>cmd({...saved,stage:'RESOLUCION'},'saveForm',{formId:'recepcion',values:{}}),/revisión/);
+ assert.throws(()=>cmd(fresh('contratos'),'saveForm',{formId:'edificacion',values:{}}),/expedientes/);
+});

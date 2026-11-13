@@ -35,3 +35,6 @@ En Settings → Pages → Build and deployment, seleccionar **Deploy from a bran
 La aplicación privada original conserva el código de producción. Esta rama pública bloquea expresamente conexiones a Firebase. Para pruebas multiusuario debe habilitarse un proyecto Firebase de desarrollo independiente, con reglas, funciones, autenticación Google y pruebas en emuladores antes de usar información municipal. GitHub Pages no ejecuta /api/sync ni funciones de servidor.
 
 La primera integración funcional de las mejoras de la ficha SmartDOM está implementada en modo de prueba local. Las integraciones reales, privacidad, cartografía, motor normativo, Gantt, IA y demás pendientes se detallan en DEVELOPMENT.md y en la pantalla «Mejoras y alcance».
+
+### Borradores de expedientes
+Abre Expedientes → ficha de un caso → Formularios y borradores. El profesional asignado o dirección puede preparar seis fichas de trabajo con versiones, vista previa y descarga HTML imprimible. Cada actuación enlaza a las variantes oficiales MINVU; las fichas no reproducen ni sustituyen los PDF oficiales.
