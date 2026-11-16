@@ -33,7 +33,7 @@ Primera integración funcional del análisis de la ficha técnica, con casos sin
 - Archivo binario protegido y validación criptográfica de firma en los módulos nuevos.
 - Reglas normativas verificadas, calendarios de días hábiles, suspensiones legales y cálculo oficial de derechos.
 - DOMEL, correo, Tesorería y firma; notificaciones de asignación de los módulos nuevos (actualmente las tareas se ven en la bandeja).
-- Gantt, Curva S, detalle por partidas, reajustes, liberación de retenciones, sustitución/liberación de garantías y multas contractuales.
+- Reprogramación y nuevas líneas base de partidas, dependencias/ruta crítica, reajustes, liberación de retenciones, sustitución/liberación de garantías y multas contractuales.
 - OCR e IA, métricas IMUDEL consolidadas, respaldo institucional y restauración comprobada.
 
 ## Pruebas
@@ -77,3 +77,30 @@ La carga de ejemplos ficticios se trasladó a Herramientas → Mejoras y alcance
 
 Validación: 126 pruebas y auditoría de imports/contenido aprobadas. La vista local
 no fue accesible desde el navegador remoto; se verifica el despliegue por GitHub.
+
+## Continuación 0.3.0 · planificación opcional de contratos
+
+Por defecto todos los contratos conservan avance manual y ninguna herramienta avanzada
+activada. ITO asignado o Dirección puede activar por separado cálculo por partidas,
+Carta Gantt y Curva S. En recepción/cierre los datos quedan en lectura.
+
+Las partidas contienen cantidad total, unidad, ponderación técnica y fechas. El avance
+constatado = suma de (cantidad ejecutada acumulada / cantidad total) × ponderación.
+Las ponderaciones deben sumar 100 %. No se suman cantidades de distintas unidades.
+No corresponde a avance financiero: no usa estados de pago, costos ni modifica el monto.
+La programación es lineal por días corridos inclusivos (en el primer día avanza 1/duración).
+La Gantt muestra fechas programadas. La Curva S proyecta programación hasta el final y
+solo une mediciones constatadas existentes, sin extrapolar avances reales.
+Con solo Curva S y sin partidas se grafican los porcentajes manuales ingresados.
+
+Cada registro identifica origen MANUAL o PARTIDAS. Las mediciones por partidas incluyen
+copia de partidas y cantidades. Al registrar la primera, la línea base se bloquea para
+no recalcular el historial; reprogramación con nuevas líneas base está pendiente.
+Las mediciones posteriores pueden corregir cantidades acumuladas con motivo y sin
+borrar los períodos anteriores. Desactivar herramientas conserva datos y versiones.
+Los respaldos/fichas JSON incluyen toda la planificación y sus snapshots.
+
+No incluye arrastre de barras, dependencias, ruta crítica, integración financiera ni
+motor normativo. Se conserva el alcance de piloto local con información ficticia.
+Pruebas: 131 casos aprobados, incluyendo cálculos ponderados, límites de cantidades,
+fechas, permisos, etapas, concurrencia y preservación de mediciones al desactivar.

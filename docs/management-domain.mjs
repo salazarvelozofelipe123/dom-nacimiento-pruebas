@@ -1,3 +1,4 @@
+import {cleanTask,measurePlan} from './contract-planning.mjs';
 import {formDefinition,cleanFormValues} from './expediente-forms.mjs';
 // Domain rules for the synthetic integrated-management pilot. No official acts.
 export const CASE_ROLES={administrativo:'Administrativo',profesional:'Profesional revisor',director:'Director DOM',inspector:'Inspector',ito:'ITO',finanzas:'Finanzas',consulta:'Consulta'};
@@ -105,8 +106,25 @@ export function reduceCase(original,command,p,actor,{now,directory=[],allCases=[
   ensure(r.module==='fiscalizacion'&&r.stage==='VISITA','La visita requiere programación previa.');requireRole(actor,['inspector','director']);requireOwner(r,actor);r.visits.push({id:p.itemId,date:date(p.date,false),location:requiredText(p.location,'el lugar'),facts:requiredText(p.facts,'los hechos constatados'),evidence:requiredText(p.evidence,'la referencia de evidencia'),by:actor.id,at:now});
  }else if(command==='guarantee'){
   ensure(r.module==='contratos','Las garantías corresponden a contratos.');requireRole(actor,['ito','director']);requireOwner(r,actor);r.guarantees.push({id:p.itemId,reference:requiredText(p.reference,'la garantía'),issuer:requiredText(p.issuer,'el emisor'),amount:integer(p.amount),expires:date(p.expires,false),custodian:requiredText(p.custodian,'el custodio'),at:now});
+ }else if(['planningTools','planningTask','removePlanningTask','measureTasks'].includes(command)){
+  ensure(r.module==='contratos','La planificación corresponde a contratos.');requireRole(actor,['ito','director']);requireOwner(r,actor);
+  ensure(['INGRESADO','PREPARACION','EJECUCION'].includes(r.stage),'La planificación se modifica antes de recepción.');
+  r.planning??={tools:{partidas:false,gantt:false,curve:false},tasks:[]};
+  if(command==='planningTools'){
+   r.planning.tools={partidas:p.partidas==='SI',gantt:p.gantt==='SI',curve:p.curve==='SI'};detail={tools:r.planning.tools};
+  }else if(command==='planningTask'||command==='removePlanningTask'){
+   ensure(Object.values(r.planning.tools).some(Boolean),'Activa una herramienta opcional.');
+   ensure(!r.planning.lockedAt,'La línea base de partidas quedó conservada al registrar la primera medición; no se puede sobrescribir.');
+   const index=r.planning.tasks.findIndex(t=>t.id===p.taskId);
+   if(command==='removePlanningTask'){ensure(index>=0,'Partida no encontrada.');r.planning.tasks.splice(index,1);}
+   else{ensure(!p.taskId||index>=0,'Partida no encontrada.');const task=cleanTask(p,p.taskId||p.itemId);if(index>=0)r.planning.tasks[index]=task;else{ensure(r.planning.tasks.length<100,'Máximo 100 partidas por contrato en el piloto.');r.planning.tasks.push(task);}}
+  }else{
+   ensure(r.stage==='EJECUCION','Las mediciones se registran durante ejecución.');ensure(r.planning.tools.partidas,'Activa el cálculo por partidas.');
+   const d=date(p.date,false);ensure(!r.progress.length||d>r.progress.at(-1).date,'Registra períodos posteriores al último avance.');const values=measurePlan(r.planning.tasks,p.quantities,d);
+   r.planning.lockedAt??=now;r.progress.push({id:p.itemId,date:d,...values,source:'PARTIDAS',tasks:structuredClone(r.planning.tasks),evidence:requiredText(p.evidence,'el informe de avance'),at:now,by:actor.id});
+  }
  }else if(command==='progress'){
-  ensure(r.module==='contratos'&&r.stage==='EJECUCION','Registra avance durante ejecución.');requireRole(actor,['ito','director']);requireOwner(r,actor);const d=date(p.date,false);ensure(!r.progress.length||d>r.progress.at(-1).date,'Registra períodos posteriores al último avance.');r.progress.push({id:p.itemId,date:d,planned:number(p.planned,0,100),actual:number(p.actual,0,100),evidence:requiredText(p.evidence,'el informe de avance'),at:now,by:actor.id});
+  ensure(r.module==='contratos'&&r.stage==='EJECUCION','Registra avance durante ejecución.');requireRole(actor,['ito','director']);requireOwner(r,actor);const d=date(p.date,false);ensure(!r.progress.length||d>r.progress.at(-1).date,'Registra períodos posteriores al último avance.');r.progress.push({id:p.itemId,date:d,planned:number(p.planned,0,100),actual:number(p.actual,0,100),evidence:requiredText(p.evidence,'el informe de avance'),source:'MANUAL',at:now,by:actor.id});
  }else if(command==='variation'){
   ensure(r.module==='contratos'&&r.stage==='EJECUCION','Las modificaciones se proponen durante ejecución.');requireRole(actor,['ito','director']);requireOwner(r,actor);const delta=Number(p.amountDelta);ensure(Number.isSafeInteger(delta),'El cambio de monto debe ser entero.');r.variations.push({id:p.itemId,title:requiredText(p.title,'la modificación'),amountDelta:delta,newEnd:date(p.newEnd),reference:requiredText(p.reference,'el antecedente'),status:'SOLICITADA',by:actor.id,at:now});
  }else if(command==='decideVariation'){

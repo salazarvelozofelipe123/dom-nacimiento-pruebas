@@ -38,3 +38,11 @@ La primera integración funcional de las mejoras de la ficha SmartDOM está impl
 
 ### Borradores de expedientes
 Abre Expedientes → ficha de un caso → Formularios y borradores. El profesional asignado o dirección puede preparar seis fichas de trabajo con versiones, vista previa y descarga HTML imprimible. Cada actuación enlaza a las variantes oficiales MINVU; las fichas no reproducen ni sustituyen los PDF oficiales.
+
+### Seguimiento opcional de contratos · 0.3.0
+En la ficha de un contrato, ITO asignado o Dirección puede activar independientemente
+Partidas, Carta Gantt y Curva S desde Configurar herramientas. El ingreso manual sigue
+disponible. Las partidas usan cantidad, unidad, peso técnico e inicio/término. Las
+ponderaciones deben sumar 100 % para medir. Ingresa cantidades ejecutadas acumuladas.
+La primera medición por partidas conserva y bloquea la línea base. Desactivar conserva
+los antecedentes; no calcula pagos ni modifica montos o plazos contractuales.

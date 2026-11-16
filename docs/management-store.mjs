@@ -1,4 +1,4 @@
-import {createCase,reduceCase,ensure,MODULES} from './management-domain.mjs';
+import {createCase,reduceCase,ensure,MODULES} from './management-domain.mjs?v=0.3.0';
 export const CASE_KEY='dom.github.demo.management.v1';
 export function createCaseRepository({storage,locks,actor,directory,now=()=>new Date().toISOString(),id=()=>crypto.randomUUID()}){
  function list(){const value=storage.getItem(CASE_KEY);if(!value)return[];let data;try{data=JSON.parse(value);}catch{throw Error('No se puede leer el registro de gestión. Exporta el almacenamiento antes de intervenirlo.');}ensure(data.version===1&&Array.isArray(data.cases)&&data.cases.every(r=>r?.id&&MODULES[r.module]&&Number.isInteger(r.revision)),'El registro de gestión tiene un formato no compatible. No se sobrescribió.');return data.cases;}

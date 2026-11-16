@@ -146,3 +146,29 @@ test('Borradores de expedientes conservan versiones, limitan editores y no aprue
  assert.throws(()=>cmd({...saved,stage:'RESOLUCION'},'saveForm',{formId:'recepcion',values:{}}),/revisión/);
  assert.throws(()=>cmd(fresh('contratos'),'saveForm',{formId:'edificacion',values:{}}),/expedientes/);
 });
+
+test('Planificación opcional conserva modo manual, partidas y mediciones con versiones',()=>{
+ let r=assign(fresh('contratos'),'ito');assert.equal(r.planning,undefined);
+ r=cmd(r,'planningTools',{partidas:'SI',gantt:'SI',curve:'SI'},'ito');
+ const task={name:'Partida ficticia',unit:'m²',quantity:'100',weight:'100',start:'2026-11-01',end:'2026-11-10'};
+ r=cmd(r,'planningTask',task,'ito');const id=r.planning.tasks[0].id;
+ r=cmd(r,'planningTask',{...task,taskId:id,quantity:'200'},'ito');assert.equal(r.planning.tasks[0].quantity,200);
+ r=cmd({...r,stage:'EJECUCION'},'measureTasks',{date:'2026-11-05',quantities:{[id]:'50'},evidence:'Informe ficticio'},'ito');
+ assert.equal(r.progress[0].actual,25);assert.equal(r.progress[0].planned,50);assert.equal(r.progress[0].source,'PARTIDAS');assert.equal(r.progress[0].tasks[0].quantity,200);assert.ok(r.planning.lockedAt);
+ assert.throws(()=>cmd(r,'planningTask',{...task,taskId:id},'ito'),/línea base/);assert.throws(()=>cmd(r,'removePlanningTask',{taskId:id},'ito'),/línea base/);
+ assert.throws(()=>cmd(r,'measureTasks',{date:'2026-11-05',quantities:{[id]:100},evidence:'Informe'},'ito'),/posteriores/);
+ const saved=structuredClone(r);
+ r=cmd(r,'planningTools',{partidas:'NO',gantt:'NO',curve:'NO'},'ito');assert.equal(r.planning.tasks.length,1);assert.deepEqual(r.progress,saved.progress);assert.deepEqual(r.versions.at(-1).planning,saved.planning);
+ assert.throws(()=>cmd(r,'measureTasks',{date:'2026-11-06',quantities:{[id]:100},evidence:'Informe'},'ito'),/Activa/);
+ r=cmd(r,'progress',{date:'2026-11-06',planned:'60',actual:'40',evidence:'Medición manual'},'ito');assert.equal(r.progress.at(-1).source,'MANUAL');assert.equal(contractSummary(r).physical,40);assert.equal(r.planning.tasks.length,1);
+});
+test('Planificación respeta responsable, función, etapa y revisión; retirar partida conserva historia',()=>{
+ let r=assign(fresh('contratos'),'ito');
+ for(const role of ['administrativo','finanzas','profesional','consulta'])assert.throws(()=>cmd(r,'planningTools',{},role),/función/);
+ assert.throws(()=>reduceCase(r,'planningTools',{reason:'Prueba',expectedRevision:r.revision},{...actors.ito,id:'otro'},{now}),/responsable/);
+ assert.throws(()=>cmd({...r,stage:'RECEPCION'},'planningTools'),/recepción/);
+ assert.throws(()=>cmd(fresh('expedientes'),'planningTools'),/contratos/);
+ assert.throws(()=>cmd(r,'planningTools',{expectedRevision:0}),/otra pestaña/);
+ r=cmd(r,'planningTools',{gantt:'SI'});r=cmd(r,'planningTask',{name:'Ensayo',unit:'u',quantity:'1',weight:'100',start:'2026-11-01',end:'2026-11-01'});
+ const id=r.planning.tasks[0].id;r=cmd(r,'removePlanningTask',{taskId:id});assert.equal(r.planning.tasks.length,0);assert.equal(r.versions.at(-1).planning.tasks.length,1);
+});

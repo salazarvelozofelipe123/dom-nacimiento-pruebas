@@ -1,5 +1,5 @@
-import {createManagement} from './management-ui.mjs?v=0.2.3';
-import {CASE_ROLES} from './management-domain.mjs';
+import {createManagement} from './management-ui.mjs?v=0.3.0';
+import {CASE_ROLES} from './management-domain.mjs?v=0.3.0';
 import {actEditor,actEditors,readActCards} from './permit-editor.mjs';
 import {dataUrl,syncStatus,freshness,nextRun,externalForRol} from './dataset.mjs';
 let syncInfo=null,syncError='';const externalData=new Map(),externalPending=new Set();
